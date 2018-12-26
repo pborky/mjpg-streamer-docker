@@ -2,9 +2,6 @@
 # build image
 FROM alpine:latest AS prep
 ARG TAG=master
-ARG uid=666 
-ARG gid=666
-ARG name=mjpeg-streamer
 
 # prepare build environmet for cmake
 RUN apk update \
@@ -28,11 +25,14 @@ RUN git clone https://github.com/jacksonliam/mjpg-streamer.git mjpeg-streamer \
 # target image
 FROM alpine:latest 
 EXPOSE 8080
+ARG uid=666
+ARG gid=666
+ARG name=mjpeg-streamer
 
 # prepare runtime environment
 RUN apk update \
  && apk upgrade \
- && apk add --no-cache --update musl shadow jpeg raspberrypi v4l-utils-libs libgphoto2 \
+ && apk add --no-cache --update bash musl shadow jpeg raspberrypi v4l-utils-libs libgphoto2 \
             sdl protobuf-c  \
  && rm -rf /var/cache/apk/*
 
@@ -44,7 +44,7 @@ COPY mjpeg_streamer.sh /usr/local/bin/
 
 # switch user
 RUN groupadd -g ${gid} ${name} \
- && useradd -rNm -s /bin/bash -G dialout -g octoprint -d /var/octoprint -u ${uid} ${name}
+ && useradd -rNM -s /bin/bash -G dialout -g ${name} -u ${uid} ${name}
 USER ${name}
 
 CMD [ "/usr/local/bin/mjpeg_streamer.sh"]
