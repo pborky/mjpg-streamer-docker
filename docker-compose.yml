@@ -1,0 +1,21 @@
+version: "2.2"
+
+services:
+  mjpg-streamer:
+    user: ${uid}:${gid}
+    image: ${registry_host}/mjpg-streamer:${TAG}-alpine3.15
+    restart: unless-stopped
+    mem_limit: 100M
+    devices:
+      - /dev/vchiq
+    group_add:
+      - video
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.mjpg-streamer.loadbalancer.server.port=8080
+      - traefik.http.routers.mjpg-streamer.rule=PathPrefix(`/streamer`)
+      - traefik.http.routers.mjpg-streamer.entryPoints=web
+      - traefik.http.routers.mjpg-streamer.middlewares=streamer-strip
+      - traefik.http.middlewares.streamer-strip.stripprefix.prefixes=/streamer
+      - traefik.http.middlewares.streamer-strip.stripprefix.forceSlash=false
+      - com.centurylinklabs.watchtower.enable=true
