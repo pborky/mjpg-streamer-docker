@@ -2,13 +2,13 @@ version: "2.2"
 
 services:
   mjpg-streamer:
-    image: ${registry_host}/mjpg-streamer:${TAG}-alpine3.15
+    image: ${registry_host}/mjpg-streamer:${TAG}
     cpus: 0.25
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        - TARGET_USE=prod
         - TARGET_ARCH
         - QEMU_ARCH
         - TAG
+        - gids

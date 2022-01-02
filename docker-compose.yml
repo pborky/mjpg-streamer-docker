@@ -2,20 +2,27 @@ version: "2.2"
 
 services:
   mjpg-streamer:
-    user: ${uid}:${gid}
     image: ${registry_host}/mjpg-streamer:${TAG}-alpine3.15
     restart: unless-stopped
     mem_limit: 100M
+    networks:
+      - proxy
     devices:
       - /dev/vchiq
-    group_add:
-      - video
+      - /dev/vcsm-cma
+    expose:
+      - 8080
     labels:
       - traefik.enable=true
-      - traefik.http.services.mjpg-streamer.loadbalancer.server.port=8080
-      - traefik.http.routers.mjpg-streamer.rule=PathPrefix(`/streamer`)
-      - traefik.http.routers.mjpg-streamer.entryPoints=web
-      - traefik.http.routers.mjpg-streamer.middlewares=streamer-strip
-      - traefik.http.middlewares.streamer-strip.stripprefix.prefixes=/streamer
-      - traefik.http.middlewares.streamer-strip.stripprefix.forceSlash=false
+      - traefik.http.services.webcam.loadbalancer.server.port=8080
+      - traefik.http.routers.webcam.rule=PathPrefix(`/webcam`)
+      - traefik.http.routers.webcam.entryPoints=web
+      - traefik.http.routers.webcam.middlewares=webcam-strip,webcam-header
+      - traefik.http.middlewares.webcam-strip.stripprefix.prefixes=/webcam
+      - traefik.http.middlewares.webcam-strip.stripprefix.forceSlash=false
+      - traefik.http.middlewares.webcam-header.headers.customrequestheaders.X-Script-Name=/webcam
       - com.centurylinklabs.watchtower.enable=true
+networks:
+  proxy:
+    external: true
+    name: ${proxy_network}
