@@ -2,7 +2,8 @@ version: "2.2"
 
 services:
   mjpg-streamer:
-    image: ${registry_host}/mjpg-streamer:${TAG}-alpine3.15
+    image: ${registry_host}/mjpg-streamer:${TAG}
+    container_name: mjpg-streamer
     restart: unless-stopped
     mem_limit: 100M
     networks:
