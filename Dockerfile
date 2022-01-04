@@ -1,12 +1,7 @@
 
 # Docker Arch (amd64, arm32v6, ...)
-ARG TARGET_ARCH
-FROM ${TARGET_ARCH}/alpine:3.15 AS base
-
-# Qemu Arch (x86_64, arm, ...)
-ARG QEMU_ARCH
-ENV QEMU_ARCH=${QEMU_ARCH}
-COPY qemu-${QEMU_ARCH}-static /usr/bin/
+ARG platform
+FROM --platform=${platform} alpine:3.15 AS base
 
 # build image
 FROM base AS build
@@ -50,9 +45,7 @@ RUN set -ex \
   ; useradd -rNM -s /bin/bash -g ${user} -u ${uid} ${user} \
   ; for g in ${gids//,/ }; do \
   echo "New group grp$g"; groupadd -g $g grp$g ; usermod -aG grp$g ${user}; \
-  done \
-  ; chmod a+rx /usr/bin/qemu-arm-static 
-# && echo "export LD_LIBRARY_PATH='/opt/vc/lib/:/usr/local/lib/mjpeg_streamer'" >> /etc/environment
+  done 
 
 # copy built files
 COPY --from=build /usr/local/lib/mjpg-streamer /usr/local/lib/mjpg-streamer

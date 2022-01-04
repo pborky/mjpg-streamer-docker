@@ -1,14 +1,13 @@
-version: "2.2"
+version: "2.4"
 
 services:
   mjpg-streamer:
-    image: ${registry_host}/mjpg-streamer:${TAG}
+    image: ${registry_host}/${registry_repository}/mjpg-streamer:${TAG}
     cpus: 0.25
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        - TARGET_ARCH
-        - QEMU_ARCH
         - TAG
         - gids
+        - platform
