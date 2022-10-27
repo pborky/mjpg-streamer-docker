@@ -1,7 +1,10 @@
 
 # Docker Arch (amd64, arm32v6, ...)
-ARG platform
-FROM --platform=${platform} alpine:3.15 AS base
+
+ARG platform=$TARGETPLATFORM
+ARG RELEASE=3.15
+
+FROM --platform=${platform} alpine:${RELEASE} AS base
 
 # build image
 FROM base AS build
